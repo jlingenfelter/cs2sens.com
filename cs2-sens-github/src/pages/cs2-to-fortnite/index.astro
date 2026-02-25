@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import Converter from '../../components/Converter.astro';
+import { DPI_VALUES, SENS_VALUES, sensToSlug } from '../../lib/data';
+const pair = 'cs2-to-fortnite';
+const fromName = 'CS2';
+const toName = 'Fortnite';
+---
+<Base title="Convert CS2 Sensitivity to Fortnite – Free Sensitivity Converter" description="Convert your CS2 sensitivity to Fortnite instantly. Free converter with eDPI and cm/360 calculations. Match your aim between CS2 and Fortnite.">
+
+<section class="hero">
+  <h1>Convert CS2 Sensitivity to Fortnite</h1>
+  <p>Keep your aim consistent between CS2 and Fortnite with precise sensitivity conversion.</p>
+</section>
+
+<Converter defaultFrom="cs2" defaultTo="fortnite" />
+
+<div class="grid-section">
+  <h2>All CS2 to Fortnite Conversions</h2>
+  {DPI_VALUES.map(dpi => (
+    <div>
+      <h3>{dpi} DPI</h3>
+      <div class="link-grid">
+        {SENS_VALUES.map(sens => (
+          <a href={`/${pair}/${dpi}-dpi/${sensToSlug(sens)}-sens/`}>{sens.toFixed(2)} sens</a>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+
+<article class="content">
+  <h2>CS2 to Fortnite Sensitivity Guide</h2>
+  <p>Converting sensitivity from CS2 to Fortnite uses a multiplier of 0.708. Your Fortnite sensitivity value will be slightly lower than your CS2 setting. A CS2 sensitivity of 2.0 becomes approximately 1.416 in Fortnite, and a CS2 sensitivity of 1.0 converts to 0.708. This conversion ensures that your physical mouse movements produce the same crosshair rotation in both games, preserving the muscle memory you have developed.</p>
+  <p>Fortnite runs on the Unreal Engine, which uses a different internal sensitivity scaling than CS2's Source 2 engine. The 0.708 multiplier precisely accounts for this difference. Without applying the correct conversion, players switching between CS2 and Fortnite will experience inconsistent aim that undermines practice time in both games.</p>
+
+  <h3>Building vs Aiming Sensitivity in Fortnite</h3>
+  <p>Fortnite uniquely combines shooter mechanics with building. Your base sensitivity needs to serve both purposes, but Fortnite helpfully provides separate sensitivity multipliers for build mode and edit mode. This means you can keep your combat sensitivity matched to CS2 while increasing your building sensitivity for faster structure placement.</p>
+  <p>Most competitive Fortnite players who come from CS2 backgrounds use a build mode multiplier between 1.3 and 1.8. This gives them enough speed to build efficiently while keeping their base aim sensitivity locked to their CS2 muscle memory. Edit mode sensitivity is typically set at or near the building multiplier.</p>
+
+  <h2>Fortnite-Specific Settings After Conversion</h2>
+  <p>Beyond the base sensitivity conversion, Fortnite offers independent X and Y axis sensitivity controls, a targeting sensitivity multiplier for ADS, and a scope sensitivity multiplier for sniper rifles. For the most CS2-like experience, keep X and Y axis values identical. Set your targeting multiplier between 0.5 and 0.7 for precise rifle ADS, and scope sensitivity between 0.3 and 0.5 for sniper precision.</p>
+  <p>These additional multipliers apply on top of your base sensitivity, so they do not affect the CS2 conversion. Think of the converted base sensitivity as your foundation, and the Fortnite-specific multipliers as refinements for different combat scenarios that do not exist in CS2.</p>
+
+  <h3>Zero Build vs Build Mode Considerations</h3>
+  <p>Fortnite's Zero Build mode removes the building aspect entirely, making it play much more like a traditional battle royale. In Zero Build, your converted CS2 sensitivity is all you need since there are no building-specific concerns. The aiming mechanics in Zero Build closely mirror other shooters, and CS2 players often find this mode more natural to transition into because the pure aim skills transfer directly.</p>
+
+  <h2>Common CS2 to Fortnite Conversions</h2>
+  <p>At 800 DPI, a CS2 sensitivity of 1.00 converts to 0.708 in Fortnite with an eDPI of 566. A CS2 sensitivity of 1.50 becomes 1.062 in Fortnite with an eDPI of 850. At 2.00 in CS2, the Fortnite equivalent is 1.416 with an eDPI of 1133. These values cover the range most competitive players operate within. The complete grid above contains every sensitivity from 0.40 to 2.50 at four DPI levels, each linking to a detailed conversion page with full calculations.</p>
+  <p>Whether you primarily play CS2 and occasionally jump into Fortnite or split your time evenly between both games, having matched sensitivity removes one of the biggest barriers to consistent aim. Convert your settings using the tool above or browse the prebuilt pages below for instant results.</p>
+</article>
+
+</Base>

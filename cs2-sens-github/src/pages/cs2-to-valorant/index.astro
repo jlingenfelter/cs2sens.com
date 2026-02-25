@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import Converter from '../../components/Converter.astro';
+import { DPI_VALUES, SENS_VALUES, sensToSlug, convertSens } from '../../lib/data';
+const pair = 'cs2-to-valorant';
+const fromName = 'CS2';
+const toName = 'Valorant';
+const mFrom = 1.0;
+const mTo = 0.314;
+---
+<Base title="Convert CS2 Sensitivity to Valorant – Free Sensitivity Converter" description="Convert your CS2 sensitivity to Valorant instantly. Free converter with eDPI and cm/360 calculations. Precise sensitivity matching for competitive players.">
+
+<section class="hero">
+  <h1>Convert CS2 Sensitivity to Valorant</h1>
+  <p>Transfer your CS2 aim to Valorant with precise sensitivity conversion.</p>
+</section>
+
+<Converter defaultFrom="cs2" defaultTo="valorant" />
+
+<div class="grid-section">
+  <h2>All CS2 to Valorant Conversions</h2>
+  {DPI_VALUES.map(dpi => (
+    <div>
+      <h3>{dpi} DPI</h3>
+      <div class="link-grid">
+        {SENS_VALUES.map(sens => (
+          <a href={`/${pair}/${dpi}-dpi/${sensToSlug(sens)}-sens/`}>{sens.toFixed(2)} sens</a>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+
+<article class="content">
+  <h2>CS2 to Valorant Sensitivity Guide</h2>
+  <p>Converting sensitivity from CS2 to Valorant is the most popular conversion among tactical shooter players. Both games reward precise crosshair placement, counter-strafing discipline, and one-tap headshots. Having matched sensitivity between them lets you maintain consistent muscle memory regardless of which game you queue up. The conversion multiplier from CS2 to Valorant is 0.314, meaning your Valorant sensitivity number will always be roughly one third of your CS2 value.</p>
+  <p>For example, a CS2 sensitivity of 2.0 converts to 0.628 in Valorant. A CS2 sensitivity of 1.0 becomes 0.314 in Valorant. The mathematics ensure that the same physical mouse movement produces identical crosshair rotation in both games. Your flicks, tracking, and micro-adjustments all transfer directly.</p>
+
+  <h3>Why CS2 and Valorant Use Different Scales</h3>
+  <p>Valorant runs on the Unreal Engine while CS2 uses Source 2. Each engine translates raw mouse input into camera rotation using its own internal formula. Riot Games chose a sensitivity scale where values are roughly three times more potent per unit compared to CS2. This design choice means that common Valorant sensitivity values tend to be lower numbers, typically between 0.2 and 0.8, whereas CS2 players usually set between 0.7 and 2.5.</p>
+  <p>A common mistake when switching from CS2 to Valorant is using the same number in both games. Playing Valorant at 2.0 sensitivity when your CS2 sensitivity is 2.0 would make your aim approximately three times faster than intended. Always use a proper converter to avoid this problem.</p>
+
+  <h2>Popular CS2 to Valorant Conversions</h2>
+  <p>At 800 DPI, which is the most popular DPI setting among competitive players, here are some common conversions. A CS2 sensitivity of 0.80 converts to approximately 0.251 in Valorant. A CS2 sensitivity of 1.00 converts to 0.314. At 1.50 in CS2, the Valorant equivalent is 0.471. And at 2.00 in CS2, you would use 0.628 in Valorant. Each of these values represents the same physical mouse movement for the same crosshair rotation.</p>
+  <p>The grid above contains links to detailed conversion pages for every sensitivity from 0.40 to 2.50 at four common DPI values. Each page includes the converted sensitivity, your eDPI, cm/360 distance, and contextual information about where that sensitivity falls in the competitive spectrum.</p>
+
+  <h3>Adjusting After Conversion</h3>
+  <p>While the mathematical conversion is exact, some players feel that Valorant plays slightly differently than CS2 even at matched sensitivity. This is often due to field of view differences, input processing, or the different visual feedback between the two engines. If you want to fine-tune after converting, keep adjustments small, no more than 0.01 to 0.02 in Valorant sensitivity. Large changes defeat the purpose of converting in the first place.</p>
+
+  <h2>Transferring Skills Between CS2 and Valorant</h2>
+  <p>CS2 and Valorant share more mechanical fundamentals than any other pair of competitive shooters. Crosshair placement, counter-strafing, burst control, angle holding, and peek timing all transfer directly. Matched sensitivity is the foundation that makes this transfer possible. Without it, your hands need to relearn spatial distances every time you switch games, fragmenting the muscle memory that makes high-level play feel automatic.</p>
+  <p>Professional players who compete in or stream both games universally ensure their sensitivity is matched. The time you spend warming up in CS2 deathmatch directly improves your Valorant aim when your sensitivity conversion is correct, and vice versa. Use the converter above and the prebuilt pages below to find your exact Valorant sensitivity for any CS2 setting.</p>
+</article>
+
+</Base>
