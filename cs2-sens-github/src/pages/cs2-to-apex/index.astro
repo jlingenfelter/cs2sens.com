@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import Converter from '../../components/Converter.astro';
+import { DPI_VALUES, SENS_VALUES, sensToSlug } from '../../lib/data';
+const pair = 'cs2-to-apex';
+---
+<Base
+  title="Convert CS2 Sensitivity to Apex Legends – Free Sensitivity Converter"
+  description="Convert your CS2 sensitivity to Apex Legends instantly. Free converter with eDPI and cm/360 calculations. Keep your aim consistent across both games."
+  breadcrumbs={[
+    { name: 'Home', url: '/' },
+    { name: 'CS2 to Apex Legends', url: '/cs2-to-apex/' },
+  ]}
+>
+
+<section class="hero">
+  <h1>Convert CS2 Sensitivity to Apex Legends</h1>
+  <p>Match your CS2 aim in Apex Legends with accurate sensitivity conversion.</p>
+</section>
+
+<Converter defaultFrom="cs2" defaultTo="apex" />
+
+<div class="grid-section">
+  <h2>All CS2 to Apex Legends Conversions</h2>
+  {DPI_VALUES.map(dpi => (
+    <div>
+      <h3>{dpi} DPI</h3>
+      <div class="link-grid">
+        {SENS_VALUES.map(sens => (
+          <a href={`/${pair}/${dpi}-dpi/${sensToSlug(sens)}-sens/`}>{sens.toFixed(2)} sens</a>
+        ))}
+      </div>
+    </div>
+  ))}
+
+  <h2>Other Game Conversions</h2>
+  <div class="link-grid">
+    <a href="/cs2-to-valorant/">CS2 → Valorant Converter</a>
+    <a href="/cs2-to-fortnite/">CS2 → Fortnite Converter</a>
+  </div>
+</div>
+
+<article class="content">
+  <h2>CS2 to Apex Legends Sensitivity Guide</h2>
+  <p>CS2 and Apex Legends share a direct one-to-one sensitivity conversion. The multiplier for both games is 1.0, meaning your CS2 sensitivity number translates directly to the same number in Apex Legends. If you play CS2 at <a href="/cs2-to-apex/800-dpi/1-80-sens/">1.80 sensitivity</a>, you should use 1.80 in Apex to maintain identical physical mouse feel. This exists because both games share Source engine heritage.</p>
+  <p>Apex Legends runs on a heavily modified version of Valve's original Source engine. Respawn Entertainment built their Titanfall and Apex technology on Source. Because the sensitivity scaling was preserved, CS2 and Apex share the same relationship between mouse input and camera rotation. If you also play Valorant or Fortnite, check our <a href="/cs2-to-valorant/">CS2 to Valorant converter</a> or <a href="/cs2-to-fortnite/">CS2 to Fortnite converter</a>.</p>
+
+  <h3>Why the Same Sens Feels Different in Apex</h3>
+  <p>Despite the one-to-one conversion, many players report that Apex feels noticeably different from CS2. The primary reason is field of view. Apex uses a wider default FOV of 90 to 110 degrees compared to CS2's fixed FOV. A wider field of view makes targets appear smaller and move across more screen space, creating the perception that sensitivity is slower even when rotational speed is identical.</p>
+  <p>Movement speed is another factor. Apex features sliding, wall climbing, ziplines, and legend abilities that create rapid position changes. Tracking a moving target in Apex requires sustained mouse movement that CS2 rarely demands. This does not mean your sensitivity is wrong, it means the gameplay demands different applications of the same physical aim.</p>
+
+  <h2>Optimizing Apex Settings After Converting</h2>
+  <p>After applying your CS2 sensitivity in Apex Legends, configure the per-optic sensitivity settings. Apex has separate multipliers for each zoom level when using scoped weapons. Most competitive Apex players use an ADS multiplier between 0.8 and 1.0. The firing range is the best place to verify your converted sensitivity feels correct.</p>
+  <p>Compare your settings against common professional values. At 800 DPI, a <a href="/cs2-to-apex/800-dpi/1-00-sens/">sensitivity of 1.00 gives an eDPI of 800</a>, while <a href="/cs2-to-apex/800-dpi/1-50-sens/">1.50 gives an eDPI of 1200</a>. Many top Apex players use sensitivities in the 1.2 to 2.5 range at 800 DPI, slightly higher than CS2 professionals.</p>
+
+  <h3>Sensitivity Needs in Battle Royale</h3>
+  <p>Battle royale gameplay demands versatility that round-based tactical shooters do not. In a single Apex match you might engage in a point-blank shotgun fight, a medium-range AR duel, and a long-distance sniper exchange. Your base sensitivity needs to handle all of these scenarios comfortably. If you find you need slightly higher sensitivity, increase by small amounts, no more than 0.1 to 0.2 at a time.</p>
+  <p>Some players prefer different settings across games. If you use a higher sensitivity in Apex than CS2, make sure you <a href="/cs2-to-valorant/">convert your Apex settings to Valorant</a> separately rather than using your CS2 base. Consistency within each game matters more than perfect matching across all of them.</p>
+
+  <h2>Common CS2 to Apex Sensitivity Settings</h2>
+  <p>Since the conversion is one-to-one, the numbers are straightforward. At 800 DPI a <a href="/cs2-to-apex/800-dpi/1-00-sens/">CS2 sensitivity of 1.00</a> gives an eDPI of 800 in both games. A <a href="/cs2-to-apex/800-dpi/1-50-sens/">sensitivity of 1.50 at 800 DPI</a> gives an eDPI of 1200. For lower DPI users, <a href="/cs2-to-apex/400-dpi/2-00-sens/">2.00 at 400 DPI</a> also gives 800 eDPI. The full range is available in the grid above, with each page providing detailed eDPI and cm/360 calculations.</p>
+</article>
+
+</Base>

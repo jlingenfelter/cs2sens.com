@@ -1,0 +1,217 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  ogTitle?: string;
+  breadcrumbs?: { name: string; url: string }[];
+  faqSchema?: { question: string; answer: string }[];
+}
+const { title, description, ogTitle, breadcrumbs, faqSchema } = Astro.props;
+const canonicalUrl = Astro.url.href;
+const siteName = 'CS2 Sensitivity Converter';
+
+// Build JSON-LD structured data
+const schemas: any[] = [];
+
+// WebApplication schema (sitewide)
+schemas.push({
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'CS2 Sensitivity Converter',
+  description: 'Free tool to convert mouse sensitivity between CS2, Valorant, Apex Legends, Fortnite and other FPS games.',
+  url: Astro.site?.toString() || 'https://example.com',
+  applicationCategory: 'UtilityApplication',
+  operatingSystem: 'Web',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+});
+
+// BreadcrumbList schema
+if (breadcrumbs && breadcrumbs.length > 0) {
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((bc, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: bc.name,
+      item: bc.url,
+    })),
+  });
+}
+
+// FAQ schema
+if (faqSchema && faqSchema.length > 0) {
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqSchema.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  });
+}
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonicalUrl}>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={ogTitle || title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:url" content={canonicalUrl}>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content={siteName}>
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content={ogTitle || title}>
+  <meta name="twitter:description" content={description}>
+
+  <!-- Structured Data -->
+  {schemas.map(schema => (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  ))}
+
+  <style is:inline>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#fff;color:#1a1a1a;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#2563eb;text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+header{background:#fff;border-bottom:1px solid #e5e7eb;padding:14px 0;position:sticky;top:0;z-index:100}
+header .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.nav-logo{font-size:17px;font-weight:700;color:#0f172a;text-decoration:none;white-space:nowrap}
+.nav-logo:hover{text-decoration:none}
+.nav-links{display:flex;gap:18px;flex-wrap:wrap}
+.nav-links a{font-size:13px;color:#4b5563;font-weight:500}
+.nav-links a:hover{color:#2563eb;text-decoration:none}
+.breadcrumbs{max-width:900px;margin:0 auto;padding:12px 20px 0;font-size:13px;color:#6b7280}
+.breadcrumbs a{color:#4b5563}
+.breadcrumbs span{margin:0 6px;color:#9ca3af}
+.hero{text-align:center;padding:48px 20px 32px}
+.hero h1{font-size:clamp(26px,5vw,40px);font-weight:800;color:#0f172a;margin-bottom:10px;line-height:1.15}
+.hero p{font-size:17px;color:#6b7280;max-width:580px;margin:0 auto}
+.card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:28px;max-width:540px;margin:0 auto 36px}
+.card h2{font-size:19px;font-weight:700;margin-bottom:18px;color:#0f172a;text-align:center}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-group{display:flex;flex-direction:column}
+label{font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+select,input[type="number"]{width:100%;padding:11px 13px;font-size:15px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1a1a1a;outline:none;transition:border-color .2s}
+select:focus,input[type="number"]:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+.btn{display:block;width:100%;padding:13px;font-size:15px;font-weight:600;color:#fff;background:#2563eb;border:none;border-radius:8px;cursor:pointer;transition:background .2s;margin-top:6px}
+.btn:hover{background:#1d4ed8}
+.result-box{text-align:center;margin-top:20px;padding:18px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;display:none}
+.result-box.visible{display:block}
+.result-box .label{font-size:12px;color:#6b7280;margin-bottom:2px}
+.result-box .val{font-size:30px;font-weight:800;color:#2563eb}
+.result-box .sub{font-size:13px;color:#6b7280;margin-top:4px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:540px;margin:0 auto 32px}
+.stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:18px;text-align:center}
+.stat .label{font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.stat .val{font-size:26px;font-weight:800;color:#2563eb}
+.stat .val.green{color:#16a34a}
+.stat .val.orange{color:#ea580c}
+.grid-section{margin:32px auto;max-width:900px;padding:0 20px}
+.grid-section h2,.grid-section h3{margin-bottom:14px;color:#0f172a}
+.grid-section h2{font-size:22px;font-weight:700}
+.grid-section h3{font-size:17px;font-weight:600;margin-top:28px}
+.link-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.link-grid a{display:inline-block;padding:7px 14px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;font-size:13px;color:#374151;font-weight:500;transition:all .15s}
+.link-grid a:hover{background:#eff6ff;border-color:#bfdbfe;color:#2563eb;text-decoration:none}
+.content{max-width:720px;margin:0 auto 48px;padding:0 20px}
+.content h2{font-size:22px;font-weight:700;color:#0f172a;margin:36px 0 14px}
+.content h3{font-size:17px;font-weight:600;color:#1e293b;margin:24px 0 10px}
+.content p{font-size:15px;color:#374151;margin-bottom:14px}
+.content ul{margin:0 0 14px 22px}
+.content li{font-size:15px;color:#374151;margin-bottom:6px}
+.faq{max-width:720px;margin:0 auto 48px;padding:0 20px}
+.faq h2{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:18px}
+.faq-item{margin-bottom:18px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:18px}
+.faq-item h3{font-size:15px;font-weight:700;color:#0f172a;margin-bottom:6px}
+.faq-item p{font-size:14px;color:#374151;margin:0}
+.internal-links{max-width:720px;margin:0 auto 40px;padding:0 20px}
+.internal-links h3{font-size:16px;font-weight:600;margin-bottom:10px;color:#0f172a}
+.site-footer{border-top:1px solid #e5e7eb;margin-top:20px;padding:32px 20px}
+.footer-inner{max-width:900px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px;margin-bottom:20px}
+.footer-col h4{font-size:13px;font-weight:700;color:#0f172a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px}
+.footer-col a{display:block;font-size:13px;color:#6b7280;margin-bottom:6px}
+.footer-col a:hover{color:#2563eb;text-decoration:none}
+.footer-copy{text-align:center;color:#9ca3af;font-size:12px;padding-top:16px;border-top:1px solid #f3f4f6}
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr}
+  .stat-row{grid-template-columns:1fr}
+  header .wrap{flex-direction:column;text-align:center}
+  .hero{padding:36px 20px 24px}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+  </style>
+</head>
+<body>
+<header>
+  <nav class="wrap" aria-label="Main navigation">
+    <a href="/" class="nav-logo">CS2 Sensitivity Converter</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/cs2-to-valorant/">CS2 → Valorant</a>
+      <a href="/cs2-to-apex/">CS2 → Apex</a>
+      <a href="/cs2-to-fortnite/">CS2 → Fortnite</a>
+    </div>
+  </nav>
+</header>
+
+{breadcrumbs && breadcrumbs.length > 0 && (
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    {breadcrumbs.map((bc, i) => (
+      <>
+        {i > 0 && <span>›</span>}
+        {i < breadcrumbs.length - 1 ? <a href={bc.url}>{bc.name}</a> : <span>{bc.name}</span>}
+      </>
+    ))}
+  </nav>
+)}
+
+<main>
+  <slot />
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Converters</h4>
+        <a href="/cs2-to-valorant/">CS2 to Valorant</a>
+        <a href="/cs2-to-apex/">CS2 to Apex Legends</a>
+        <a href="/cs2-to-fortnite/">CS2 to Fortnite</a>
+      </div>
+      <div class="footer-col">
+        <h4>Popular at 800 DPI</h4>
+        <a href="/cs2-to-valorant/800-dpi/1-00-sens/">1.00 Sens → Valorant</a>
+        <a href="/cs2-to-valorant/800-dpi/2-00-sens/">2.00 Sens → Valorant</a>
+        <a href="/cs2-to-apex/800-dpi/1-50-sens/">1.50 Sens → Apex</a>
+      </div>
+      <div class="footer-col">
+        <h4>Popular at 400 DPI</h4>
+        <a href="/cs2-to-valorant/400-dpi/2-00-sens/">2.00 Sens → Valorant</a>
+        <a href="/cs2-to-apex/400-dpi/2-00-sens/">2.00 Sens → Apex</a>
+        <a href="/cs2-to-fortnite/400-dpi/1-50-sens/">1.50 Sens → Fortnite</a>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <a href="/">Sensitivity Converter</a>
+        <a href="/cs2-to-valorant/">eDPI Calculator</a>
+        <a href="/cs2-to-apex/">cm/360 Calculator</a>
+      </div>
+    </div>
+    <div class="footer-copy">Free CS2 Sensitivity Converter Tool</div>
+  </div>
+</footer>
+</body>
+</html>

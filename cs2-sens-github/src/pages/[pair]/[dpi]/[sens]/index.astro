@@ -1,0 +1,186 @@
+---
+import Base from '../../../../layouts/Base.astro';
+import { PAIRS, DPI_VALUES, SENS_VALUES, sensToSlug, slugToSens, convertSens, calcEdpi, calcCm360, classifyCm360, getPairBySlug } from '../../../../lib/data';
+import type { PairInfo } from '../../../../lib/data';
+
+export function getStaticPaths() {
+  const paths: any[] = [];
+  for (const pair of PAIRS) {
+    for (const dpi of DPI_VALUES) {
+      for (const sens of SENS_VALUES) {
+        paths.push({
+          params: {
+            pair: pair.slug,
+            dpi: `${dpi}-dpi`,
+            sens: `${sensToSlug(sens)}-sens`,
+          },
+          props: { pair, dpi, sens },
+        });
+      }
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  pair: PairInfo;
+  dpi: number;
+  sens: number;
+}
+
+const { pair, dpi, sens } = Astro.props;
+const converted = convertSens(sens, pair.multiplierFrom, pair.multiplierTo);
+const edpi = calcEdpi(sens, dpi);
+const cm360 = calcCm360(sens, dpi);
+const cm360Class = classifyCm360(cm360);
+const convertedEdpi = calcEdpi(converted, dpi);
+
+// Nearby sens links
+const sensIdx = SENS_VALUES.indexOf(sens);
+const prevSens = sensIdx > 0 ? SENS_VALUES[sensIdx - 1] : null;
+const nextSens = sensIdx < SENS_VALUES.length - 1 ? SENS_VALUES[sensIdx + 1] : null;
+
+// Other DPIs for same sens
+const otherDpis = DPI_VALUES.filter(d => d !== dpi);
+
+// Cross-conversion links (same dpi+sens, other game pairs)
+const otherPairs = PAIRS.filter(p => p.slug !== pair.slug);
+
+const title = `${pair.fromName} ${sens.toFixed(2)} Sensitivity to ${pair.toName} at ${dpi} DPI`;
+const description = `Convert ${pair.fromName} sensitivity ${sens.toFixed(2)} to ${pair.toName} at ${dpi} DPI. Result: ${converted.toFixed(3)} sensitivity, ${Math.round(edpi)} eDPI, ${cm360.toFixed(1)} cm/360.`;
+
+// Breadcrumbs
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: `CS2 to ${pair.toName}`, url: `/${pair.slug}/` },
+  { name: `${dpi} DPI`, url: `/${pair.slug}/` },
+  { name: `${sens.toFixed(2)} Sensitivity`, url: `/${pair.slug}/${dpi}-dpi/${sensToSlug(sens)}-sens/` },
+];
+
+// Conditional content
+const sensCategory = cm360 < 30 ? 'high' : cm360 < 50 ? 'medium' : 'low';
+const padSize = cm360 < 30 ? 'standard' : cm360 < 50 ? 'large' : 'extra-large';
+const playstyle = cm360 < 30 ? 'aggressive entry fragging and close-quarters combat' : cm360 < 50 ? 'balanced rifling with a mix of precision and mobility' : 'passive anchoring and long-range precision';
+const proComparison = edpi < 700 ? 'below the average professional eDPI' : edpi < 1100 ? 'within the typical professional eDPI range' : 'above the average professional eDPI';
+
+// FAQ data for schema
+const faqData = [
+  {
+    question: `What is ${sens.toFixed(2)} sensitivity in ${pair.fromName} equal to in ${pair.toName}?`,
+    answer: `A ${pair.fromName} sensitivity of ${sens.toFixed(2)} at ${dpi} DPI equals ${converted.toFixed(3)} in ${pair.toName}. This gives you an eDPI of ${Math.round(edpi)} and requires ${cm360.toFixed(1)} cm of mouse movement for a full 360-degree turn.`,
+  },
+  {
+    question: `Is ${Math.round(edpi)} eDPI good for competitive play?`,
+    answer: edpi < 600 ? `An eDPI of ${Math.round(edpi)} is quite low. It provides excellent precision but requires a large mousepad. This works well for patient, angle-holding playstyles.` : edpi < 1000 ? `Yes, an eDPI of ${Math.round(edpi)} falls within the range used by most professional CS2 players. It offers a good balance of precision and mobility.` : `An eDPI of ${Math.round(edpi)} is on the higher side for competitive play. Some professionals use similar values, but it requires precise hand control.`,
+  },
+  {
+    question: `What does ${cm360.toFixed(1)} cm/360 mean?`,
+    answer: `It means you need to physically move your mouse ${cm360.toFixed(1)} centimetres to perform a complete 360-degree turn in game. This is considered a ${cm360Class} sensitivity setting.`,
+  },
+  {
+    question: `Do I need to change DPI when converting from ${pair.fromName} to ${pair.toName}?`,
+    answer: `No. Your mouse DPI stays the same at ${dpi}. Only the in-game sensitivity changes from ${sens.toFixed(2)} in ${pair.fromName} to ${converted.toFixed(3)} in ${pair.toName}.`,
+  },
+  {
+    question: `How do I convert ${sens.toFixed(2)} ${pair.fromName} sensitivity to other games?`,
+    answer: `Use the same base sensitivity of ${sens.toFixed(2)} at ${dpi} DPI and apply the conversion multiplier for each game. ${otherPairs.map(p => `For ${p.toName}, the result is ${convertSens(sens, p.multiplierFrom, p.multiplierTo).toFixed(3)}.`).join(' ')}`,
+  },
+];
+
+if (sensCategory === 'low') {
+  faqData.push({
+    question: `Is my sensitivity too low at ${cm360.toFixed(1)} cm/360?`,
+    answer: `A cm/360 of ${cm360.toFixed(1)} is considered ${cm360Class}. While this provides excellent aim precision, make sure you have enough desk space. If you frequently cannot turn fast enough, consider a slightly higher sensitivity.`,
+  });
+} else if (sensCategory === 'high') {
+  faqData.push({
+    question: `Is my sensitivity too high at ${cm360.toFixed(1)} cm/360?`,
+    answer: `A cm/360 of ${cm360.toFixed(1)} is considered ${cm360Class}. This is faster than most competitive players use. If you overshoot targets or struggle at range, consider lowering your sensitivity.`,
+  });
+} else {
+  faqData.push({
+    question: `Is ${sens.toFixed(2)} a good sensitivity for ${pair.fromName}?`,
+    answer: `A sensitivity of ${sens.toFixed(2)} at ${dpi} DPI gives an eDPI of ${Math.round(edpi)}, which is ${proComparison}. This is a solid competitive setting that balances precision and mobility.`,
+  });
+}
+---
+<Base title={title} description={description} breadcrumbs={breadcrumbs} faqSchema={faqData}>
+
+<section class="hero">
+  <h1>{pair.fromName} {sens.toFixed(2)} → {pair.toName} at {dpi} DPI</h1>
+  <p>Converted sensitivity with eDPI and cm/360 calculations.</p>
+</section>
+
+<div class="stat-row">
+  <div class="stat">
+    <div class="label">Converted Sens</div>
+    <div class="val">{converted.toFixed(3)}</div>
+  </div>
+  <div class="stat">
+    <div class="label">eDPI ({pair.fromName})</div>
+    <div class="val green">{Math.round(edpi)}</div>
+  </div>
+  <div class="stat">
+    <div class="label">cm/360</div>
+    <div class="val orange">{cm360.toFixed(1)}</div>
+  </div>
+</div>
+
+<article class="content">
+  <h2>Converting {pair.fromName} {sens.toFixed(2)} Sensitivity to {pair.toName}</h2>
+  <p>At {dpi} DPI with a {pair.fromName} sensitivity of {sens.toFixed(2)}, the equivalent {pair.toName} sensitivity is <strong>{converted.toFixed(3)}</strong>. This conversion uses the multiplier ratio of {pair.multiplierTo} / {pair.multiplierFrom}, ensuring that the same physical mouse movement produces identical crosshair rotation in both games. Your {pair.fromName} eDPI of {Math.round(edpi)} translates to {Math.round(convertedEdpi)} eDPI in {pair.toName}.</p>
+
+  <h3>Your Sensitivity Profile at {dpi} DPI</h3>
+  <p>With a {pair.fromName} sensitivity of {sens.toFixed(2)} at {dpi} DPI, your effective DPI is {Math.round(edpi)}. This means you need to move your mouse {cm360.toFixed(1)} centimetres to complete a full 360-degree turn. This is classified as a <strong>{cm360Class} sensitivity</strong> setting, which is {proComparison}.</p>
+  <p>A cm/360 of {cm360.toFixed(1)} cm is best suited for {playstyle}. {sensCategory === 'high' ? 'At this speed, small mouse movements create large crosshair rotations. You can turn quickly but need precise hand control to maintain accuracy at range. A ' + padSize + ' mousepad of at least 25 cm width should be sufficient.' : sensCategory === 'medium' ? 'This is a balanced setting that provides enough precision for long-range duels while still allowing comfortable turning speed. A ' + padSize + ' mousepad of at least 35 cm width is recommended.' : 'At this speed, you need significant physical mouse movement for turns. This provides excellent precision for holding angles and landing headshots at distance. A ' + padSize + ' mousepad of at least 45 cm width is essential.'}</p>
+
+  <h2>Understanding {sens.toFixed(2)} Sensitivity at {dpi} DPI</h2>
+  <p>An eDPI of {Math.round(edpi)} places you {edpi < 600 ? 'in the lower end of competitive settings. Many AWP specialists and passive players operate in this range, prioritising precision over speed. You will excel at holding tight angles and hitting distant headshots but may struggle with quick 180-degree checks' : edpi < 900 ? 'in the sweet spot for most competitive riflers. This eDPI balances precision with mobility, letting you comfortably hold angles while still having the speed to clear sites and check corners efficiently' : edpi < 1200 ? 'in a moderate-to-high range that favors aggressive play. This eDPI gives you plenty of speed for fast turns and close-quarters engagements while still maintaining reasonable accuracy at medium distances' : 'in a high sensitivity range. This eDPI favors maximum mobility and fast reactions. Close-quarters combat and quick flicks benefit from this speed, though long-range precision may require more careful hand control'}.</p>
+
+  <h3>How This Compares to Professional Settings</h3>
+  <p>{edpi < 700 ? `An eDPI of ${Math.round(edpi)} is on the lower side of professional CS2 settings. Players like s1mple and ZywOo have used similar eDPI values. This range demands a large mousepad and rewards patient, precise play.` : edpi < 1000 ? `An eDPI of ${Math.round(edpi)} falls within the most popular range among CS2 professionals. The majority of tier-one riflers operate between 700 and 1000 eDPI, making this a well-validated competitive setting.` : `An eDPI of ${Math.round(edpi)} is above the professional average but not uncommon. Some elite players like woxic have competed successfully at higher eDPI values. This setting works well for players with precise fine motor control.`}</p>
+
+  <h2>Applying {converted.toFixed(3)} in {pair.toName}</h2>
+  <p>To use your converted sensitivity, open {pair.toName} and navigate to the mouse sensitivity settings. Set your sensitivity to {converted.toFixed(3)} with your mouse DPI at {dpi}. {pair.to === 'valorant' ? 'In Valorant, you can set sensitivity to three decimal places in the settings menu. Enter ' + converted.toFixed(3) + ' directly.' : pair.to === 'apex' ? 'In Apex Legends, the sensitivity slider may not offer enough precision. Use the config file or enter the exact value in the settings field.' : 'In Fortnite, navigate to the mouse sensitivity option and enter ' + converted.toFixed(3) + '. Make sure X and Y axis values match unless you intentionally want different horizontal and vertical speed.'}</p>
+  <p>After applying the converted sensitivity, spend at least 10 to 15 minutes in {pair.to === 'valorant' ? 'the practice range' : pair.to === 'apex' ? 'the firing range' : 'creative mode or the aim course'} to verify the feel matches your CS2 experience. Focus on both flick shots and smooth tracking to confirm the conversion feels natural.</p>
+</article>
+
+<section class="faq">
+  <h2>Frequently Asked Questions</h2>
+  {faqData.map(faq => (
+    <div class="faq-item">
+      <h3>{faq.question}</h3>
+      <p>{faq.answer}</p>
+    </div>
+  ))}
+</section>
+
+<div class="internal-links">
+  <h3>Nearby Sensitivities</h3>
+  <div class="link-grid">
+    {prevSens && <a href={`/${pair.slug}/${dpi}-dpi/${sensToSlug(prevSens)}-sens/`}>← {prevSens.toFixed(2)} sens</a>}
+    {nextSens && <a href={`/${pair.slug}/${dpi}-dpi/${sensToSlug(nextSens)}-sens/`}>{nextSens.toFixed(2)} sens →</a>}
+  </div>
+
+  <h3>Same Sensitivity, Other DPIs</h3>
+  <div class="link-grid">
+    {otherDpis.map(d => (
+      <a href={`/${pair.slug}/${d}-dpi/${sensToSlug(sens)}-sens/`}>{sens.toFixed(2)} at {d} DPI</a>
+    ))}
+  </div>
+
+  <h3>Convert {sens.toFixed(2)} Sensitivity to Other Games</h3>
+  <div class="link-grid">
+    {otherPairs.map(p => (
+      <a href={`/${p.slug}/${dpi}-dpi/${sensToSlug(sens)}-sens/`}>{p.fromName} → {p.toName} at {dpi} DPI</a>
+    ))}
+  </div>
+
+  <h3>Back to Hub</h3>
+  <div class="link-grid">
+    <a href={`/${pair.slug}/`}>{pair.fromName} → {pair.toName} All Conversions</a>
+    <a href="/">CS2 Sensitivity Converter Home</a>
+  </div>
+</div>
+
+</Base>
